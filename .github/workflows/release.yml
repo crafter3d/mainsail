@@ -1,6 +1,6 @@
 name: Release
 
-run-name: Release v${{ github.event.inputs.version }}
+run-name: Release ${{ github.event_name == 'workflow_dispatch' && format('v{0}', github.event.inputs.version) || github.ref_name }}
 
 on:
   workflow_dispatch:
@@ -9,19 +9,22 @@ on:
         type: string
         description: New version number in X.Y.Z
         required: true
+  push:
+    tags:
+      - 'v*'
 
 permissions:
   contents: write
 
 jobs:
   push-version-number:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout develop branch
+      - name: Checkout default branch
         uses: actions/checkout@v6
         with:
-          ref: 'develop'
-          token: ${{ secrets.PAT }}
+          ref: ${{ github.event.repository.default_branch }}
 
       - name: get-npm-version
         id: package-version
@@ -43,25 +46,28 @@ jobs:
           push: true
 
   update-master-branch:
+    if: github.event_name == 'workflow_dispatch'
     needs: ['push-version-number']
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout master
+      - name: Checkout default branch
         uses: actions/checkout@v6
         with:
-          ref: 'master'
-          token: ${{ secrets.PAT }}
+          ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0
 
-      - name: Fast-forward merge from develop
+      - name: Fast-forward merge from develop when available
         shell: bash
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git merge --ff-only origin/develop
-          git push origin master
+          if git ls-remote --heads origin develop | grep -q develop; then
+            git merge --ff-only origin/develop
+          fi
+          git push origin ${{ github.event.repository.default_branch }}
 
-  release:
+  release-manual:
+    if: github.event_name == 'workflow_dispatch'
     needs: ['update-master-branch']
     name: Build and release
     runs-on: ubuntu-latest
@@ -69,7 +75,7 @@ jobs:
       - name: Fetch repo
         uses: actions/checkout@v6
         with:
-          ref: 'master'
+          ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0
 
       - name: Install node
@@ -86,6 +92,11 @@ jobs:
       - name: Move build out of dist
         shell: bash
         run: mv ./dist/mainsail.zip ./mainsail.zip
+
+      - name: Prepare git-cliff config for current repository
+        shell: bash
+        run: |
+          sed -i "s|https://github.com/mainsail-crew/mainsail|https://github.com/${GITHUB_REPOSITORY}|g" cliff.toml cliff-release.toml
 
       - name: Get latest tag
         id: latest_tag
@@ -104,7 +115,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         id: create-release
         with:
-          token: ${{ secrets.PAT }}
           name: v${{ github.event.inputs.version }}
           tag_name: v${{ github.event.inputs.version }}
           files: ./mainsail.zip
@@ -114,27 +124,56 @@ jobs:
         shell: bash
         run: cp ./remote/* ./dist/
 
-      - name: Upload to remote server
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+
+  release-from-tag:
+    if: github.event_name == 'push'
+    name: Build and release from tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch repo
+        uses: actions/checkout@v6
         with:
-          server: ${{ secrets.REMOTEHOST }}
-          username: ${{ secrets.REMOTEUSER }}
-          password: ${{ secrets.REMOTEPASSWORD }}
-          dangerous-clean-slate: true
-          exclude: .htaccess
-          local-dir: ./dist/
+          fetch-depth: 0
+
+      - name: Install node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Move build out of dist
+        shell: bash
+        run: mv ./dist/mainsail.zip ./mainsail.zip
+
+      - name: Create release and upload build
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          files: ./mainsail.zip
+          generate_release_notes: true
 
   update-changelog:
-    needs: ['release']
+    if: github.event_name == 'workflow_dispatch'
+    needs: ['release-manual']
     name: Generate changelog
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          ref: 'develop'
+          ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0
-          token: ${{ secrets.PAT }}
+
+      - name: Prepare git-cliff config for current repository
+        shell: bash
+        run: |
+          sed -i "s|https://github.com/mainsail-crew/mainsail|https://github.com/${GITHUB_REPOSITORY}|g" cliff.toml cliff-release.toml
 
       - name: Get latest tag
         id: latest_tag
