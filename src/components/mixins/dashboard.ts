@@ -16,6 +16,7 @@ import {
     mdiWebcam,
     mdiAdjust,
     mdiMulticast,
+    mdiWrenchCog,
 } from '@mdi/js'
 import { afcIconLogo } from '@/plugins/afcIcons'
 
@@ -77,6 +78,8 @@ export default class DashboardMixin extends BaseMixin {
                 return mdiAdjust
             case 'mmu':
                 return mdiMulticast
+            case 'print-belt':
+                return mdiWrenchCog
             case 'afc':
                 return afcIconLogo
 
