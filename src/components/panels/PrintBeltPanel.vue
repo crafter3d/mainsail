@@ -6,76 +6,127 @@
         :collapsible="true"
         card-class="print-belt-panel">
         <v-card-text class="py-2">
-            <v-row>
-                <v-col class="text-center">
-                    <v-btn class="mx-1 my-1" color="primary" @click="runZTiltAdjust">
+            <!-- 2×3 action button grid -->
+            <v-row dense>
+                <v-col cols="6" class="d-flex flex-column">
+                    <v-btn block class="my-1" color="primary" @click="runZTiltAdjust">
+                        <v-icon left small>{{ mdiAdjust }}</v-icon>
                         {{ $t('Panels.PrintBeltPanel.ZTiltAdjust') }}
                     </v-btn>
-                    <v-btn class="mx-1 my-1" color="primary" @click="runBedMeshCalibrate">
+                    <v-btn block class="my-1" color="primary" @click="runBedMeshCalibrate">
+                        <v-icon left small>{{ mdiGrid }}</v-icon>
                         {{ $t('Panels.PrintBeltPanel.BedMeshCalibrate') }}
                     </v-btn>
-                    <v-btn class="mx-1 my-1" color="primary" @click="runBedCooldown">
+                    <v-btn block class="my-1" color="primary" @click="runBedCooldown">
+                        <v-icon left small>{{ mdiSnowflake }}</v-icon>
                         {{ $t('Panels.PrintBeltPanel.BedCooldown') }}
                     </v-btn>
-                    <v-btn class="mx-1 my-1" color="primary" @click="runOpenDoor">
+                </v-col>
+                <v-col cols="6" class="d-flex flex-column">
+                    <v-btn block class="my-1" color="primary" @click="runOpenDoor">
+                        <v-icon left small>{{ mdiDoorOpen }}</v-icon>
                         {{ $t('Panels.PrintBeltPanel.OpenDoor') }}
                     </v-btn>
-                    <v-btn class="mx-1 my-1" color="primary" @click="runCloseDoor">
-                        {{ $t('Panels.PrintBeltPanel.CloseDoor') }}
-                    </v-btn>
-                    <v-btn class="mx-1 my-1" color="error" @click="openThrowObjectDialog">
+                    <v-btn block class="my-1" color="error" @click="openThrowObjectDialog">
+                        <v-icon left small>{{ mdiEject }}</v-icon>
                         {{ $t('Panels.PrintBeltPanel.ThrowObject') }}
+                    </v-btn>
+                    <v-btn block class="my-1" color="primary" @click="runCloseDoor">
+                        <v-icon left small>{{ mdiDoorClosed }}</v-icon>
+                        {{ $t('Panels.PrintBeltPanel.CloseDoor') }}
                     </v-btn>
                 </v-col>
             </v-row>
 
             <v-divider class="my-2" />
 
-            <v-row>
-                <v-col class="text-center">
-                    <div class="text-body-2 mb-2">{{ $t('Panels.PrintBeltPanel.BeltControls') }}</div>
-                    <v-btn
-                        class="mx-1 my-1"
-                        color="primary"
-                        :disabled="beltIsMoving"
-                        :loading="loadings.includes(loadingBeltStepForward)"
-                        @click="moveBeltStepForward">
-                        {{ $t('Panels.PrintBeltPanel.MoveForward') }}
-                    </v-btn>
-                    <v-btn
-                        class="mx-1 my-1"
-                        color="primary"
-                        :disabled="beltIsMoving"
-                        :loading="loadings.includes(loadingBeltStepBackward)"
-                        @click="moveBeltStepBackward">
-                        {{ $t('Panels.PrintBeltPanel.MoveBackward') }}
-                    </v-btn>
-                    <v-btn
-                        class="mx-1 my-1"
-                        color="success"
-                        :disabled="beltMoving === 'forward'"
-                        :loading="loadings.includes(loadingBeltStartForward)"
-                        @click="startBeltForward">
-                        {{ $t('Panels.PrintBeltPanel.StartForward') }}
-                    </v-btn>
-                    <v-btn
-                        class="mx-1 my-1"
-                        color="success"
-                        :disabled="beltMoving === 'backward'"
-                        :loading="loadings.includes(loadingBeltStartBackward)"
-                        @click="startBeltBackward">
-                        {{ $t('Panels.PrintBeltPanel.StartBackward') }}
-                    </v-btn>
-                    <v-btn
-                        class="mx-1 my-1"
-                        color="error"
-                        :disabled="!beltIsMoving"
-                        :loading="loadings.includes(loadingBeltStop)"
-                        @click="stopBeltMovement">
-                        {{ $t('Panels.PrintBeltPanel.Stop') }}
-                    </v-btn>
-                </v-col>
-            </v-row>
+            <!-- Belt control strip -->
+            <div class="text-body-2 text-center mb-3">{{ $t('Panels.PrintBeltPanel.BeltControls') }}</div>
+            <div class="d-flex justify-center align-center mb-2">
+                <!-- Start Backward: ←∞ -->
+                <v-tooltip bottom>
+                    <template #activator="{ on, attrs }">
+                        <v-btn
+                            icon
+                            color="primary"
+                            :disabled="beltMoving === 'backward'"
+                            :loading="loadings.includes(loadingBeltStartBackward)"
+                            v-bind="attrs"
+                            v-on="on"
+                            @click="startBeltBackward">
+                            <span class="belt-btn-continuous belt-btn-continuous--backward">
+                                <v-icon small>{{ mdiArrowLeft }}</v-icon>
+                                <span class="belt-btn-infinity">∞</span>
+                            </span>
+                        </v-btn>
+                    </template>
+                    <span>{{ $t('Panels.PrintBeltPanel.StartBackward') }}</span>
+                </v-tooltip>
+
+                <!-- Move -1 -->
+                <v-tooltip bottom>
+                    <template #activator="{ on, attrs }">
+                        <v-btn
+                            icon
+                            color="primary"
+                            :disabled="beltIsMoving"
+                            :loading="loadings.includes(loadingBeltStepBackward)"
+                            v-bind="attrs"
+                            v-on="on"
+                            @click="moveBeltStepBackward">
+                            <v-icon>{{ mdiChevronLeft }}</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>{{ $t('Panels.PrintBeltPanel.MoveBackward') }}</span>
+                </v-tooltip>
+
+                <!-- Center wheel / stop -->
+                <v-tooltip bottom>
+                    <template #activator="{ on, attrs }">
+                        <v-btn icon :color="centerWheelColor" v-bind="attrs" v-on="on" @click="onCenterWheelClick">
+                            <v-icon large>{{ centerWheelIcon }}</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>{{ beltIsMoving ? $t('Panels.PrintBeltPanel.Stop') : $t('Panels.PrintBeltPanel.BeltControls') }}</span>
+                </v-tooltip>
+
+                <!-- Move +1 -->
+                <v-tooltip bottom>
+                    <template #activator="{ on, attrs }">
+                        <v-btn
+                            icon
+                            color="primary"
+                            :disabled="beltIsMoving"
+                            :loading="loadings.includes(loadingBeltStepForward)"
+                            v-bind="attrs"
+                            v-on="on"
+                            @click="moveBeltStepForward">
+                            <v-icon>{{ mdiChevronRight }}</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>{{ $t('Panels.PrintBeltPanel.MoveForward') }}</span>
+                </v-tooltip>
+
+                <!-- Start Forward: ∞→ -->
+                <v-tooltip bottom>
+                    <template #activator="{ on, attrs }">
+                        <v-btn
+                            icon
+                            color="primary"
+                            :disabled="beltMoving === 'forward'"
+                            :loading="loadings.includes(loadingBeltStartForward)"
+                            v-bind="attrs"
+                            v-on="on"
+                            @click="startBeltForward">
+                            <span class="belt-btn-continuous belt-btn-continuous--forward">
+                                <span class="belt-btn-infinity">∞</span>
+                                <v-icon small>{{ mdiArrowRight }}</v-icon>
+                            </span>
+                        </v-btn>
+                    </template>
+                    <span>{{ $t('Panels.PrintBeltPanel.StartForward') }}</span>
+                </v-tooltip>
+            </div>
         </v-card-text>
 
         <v-dialog v-model="throwObjectDialog" max-width="420">
@@ -96,7 +147,21 @@
 import { Component, Mixins } from 'vue-property-decorator'
 import BaseMixin from '@/components/mixins/base'
 import Panel from '@/components/ui/Panel.vue'
-import { mdiWrenchCog } from '@mdi/js'
+import {
+    mdiWrenchCog,
+    mdiAdjust,
+    mdiGrid,
+    mdiSnowflake,
+    mdiDoorOpen,
+    mdiDoorClosed,
+    mdiEject,
+    mdiCogOutline,
+    mdiStopCircleOutline,
+    mdiChevronLeft,
+    mdiChevronRight,
+    mdiArrowLeft,
+    mdiArrowRight,
+} from '@mdi/js'
 
 const BELT_DIRECTION_FORWARD = 1
 const BELT_DIRECTION_BACKWARD = -1
@@ -116,6 +181,19 @@ type BeltMovingState = 'off' | 'forward' | 'backward'
 })
 export default class PrintBeltPanel extends Mixins(BaseMixin) {
     mdiWrenchCog = mdiWrenchCog
+    mdiAdjust = mdiAdjust
+    mdiGrid = mdiGrid
+    mdiSnowflake = mdiSnowflake
+    mdiDoorOpen = mdiDoorOpen
+    mdiDoorClosed = mdiDoorClosed
+    mdiEject = mdiEject
+    mdiCogOutline = mdiCogOutline
+    mdiStopCircleOutline = mdiStopCircleOutline
+    mdiChevronLeft = mdiChevronLeft
+    mdiChevronRight = mdiChevronRight
+    mdiArrowLeft = mdiArrowLeft
+    mdiArrowRight = mdiArrowRight
+
     beltMoving: BeltMovingState = 'off'
     throwObjectDialog = false
     loadingBeltStepForward = LOADING_BELT_STEP_FORWARD
@@ -126,6 +204,14 @@ export default class PrintBeltPanel extends Mixins(BaseMixin) {
 
     get beltIsMoving(): boolean {
         return this.beltMoving !== 'off'
+    }
+
+    get centerWheelIcon(): string {
+        return this.beltIsMoving ? this.mdiStopCircleOutline : this.mdiCogOutline
+    }
+
+    get centerWheelColor(): string {
+        return this.beltIsMoving ? 'error' : 'grey'
     }
 
     beforeDestroy(): void {
@@ -209,5 +295,25 @@ export default class PrintBeltPanel extends Mixins(BaseMixin) {
         this.executeScript(BELT_STOP_SCRIPT, this.loadingBeltStop)
         this.beltMoving = 'off'
     }
+
+    onCenterWheelClick(): void {
+        if (!this.beltIsMoving) return
+
+        this.stopBeltMovement()
+    }
 }
 </script>
+
+<style scoped>
+.belt-btn-continuous {
+    display: flex;
+    align-items: center;
+    line-height: 1;
+}
+
+.belt-btn-infinity {
+    font-size: 0.85rem;
+    font-weight: bold;
+    line-height: 1;
+}
+</style>

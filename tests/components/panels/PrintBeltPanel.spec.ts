@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import PrintBeltPanel from '@/components/panels/PrintBeltPanel.vue'
 import DashboardMixin from '@/components/mixins/dashboard'
 import { allDashboardPanels } from '@/store/variables'
-import { mdiWrenchCog } from '@mdi/js'
+import { mdiWrenchCog, mdiCogOutline, mdiStopCircleOutline } from '@mdi/js'
 
 type MethodMap = Record<string, (...args: any[]) => any>
 
@@ -122,6 +122,32 @@ describe('PrintBeltPanel', () => {
         expect(computed.beltIsMoving.get.call({ beltMoving: 'off' })).toBe(false)
         expect(computed.beltIsMoving.get.call({ beltMoving: 'forward' })).toBe(true)
         expect(computed.beltIsMoving.get.call({ beltMoving: 'backward' })).toBe(true)
+    })
+
+    it('computes centerWheelIcon based on movement state', () => {
+        const vms = {
+            idle: { beltIsMoving: false, mdiCogOutline, mdiStopCircleOutline },
+            moving: { beltIsMoving: true, mdiCogOutline, mdiStopCircleOutline },
+        }
+        expect(computed.centerWheelIcon.get.call(vms.idle)).toBe(mdiCogOutline)
+        expect(computed.centerWheelIcon.get.call(vms.moving)).toBe(mdiStopCircleOutline)
+    })
+
+    it('computes centerWheelColor based on movement state', () => {
+        expect(computed.centerWheelColor.get.call({ beltIsMoving: false })).toBe('grey')
+        expect(computed.centerWheelColor.get.call({ beltIsMoving: true })).toBe('error')
+    })
+
+    it('onCenterWheelClick stops belt only when moving', () => {
+        const stopBeltMovement = vi.fn()
+
+        const vmIdle = { beltIsMoving: false, stopBeltMovement }
+        methods.onCenterWheelClick.call(vmIdle)
+        expect(stopBeltMovement).not.toHaveBeenCalled()
+
+        const vmMoving = { beltIsMoving: true, stopBeltMovement }
+        methods.onCenterWheelClick.call(vmMoving)
+        expect(stopBeltMovement).toHaveBeenCalled()
     })
 })
 
