@@ -947,7 +947,7 @@
         },
         "PrintBeltPanel": {
             "BedCooldown": "Bed cooldown",
-            "BedMeshCalibrate": "Bed mesh calibrate",
+            "BedMeshCalibrate": "Bed calibrate",
             "BeltControls": "Belt controls",
             "CloseDoor": "Close door",
             "Headline": "Print Belt",

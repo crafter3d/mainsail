@@ -42,20 +42,20 @@
 
             <!-- Belt control strip -->
             <div class="text-body-2 text-center mb-3">{{ $t('Panels.PrintBeltPanel.BeltControls') }}</div>
-            <div class="d-flex justify-center align-center mb-2">
+            <div class="d-flex align-center belt-controls-row mb-2">
                 <!-- Start Backward: ←∞ -->
                 <v-tooltip bottom>
                     <template #activator="{ on, attrs }">
                         <v-btn
-                            icon
-                            color="primary"
-                            :disabled="beltMoving === 'backward'"
+                            small
+                            class="belt-btn belt-btn-edge-left"
+                            :class="{ 'belt-btn--active': isStartBackwardActive }"
                             :loading="loadings.includes(loadingBeltStartBackward)"
                             v-bind="attrs"
                             v-on="on"
                             @click="startBeltBackward">
-                            <span class="belt-btn-continuous belt-btn-continuous--backward">
-                                <v-icon small>{{ mdiArrowLeft }}</v-icon>
+                            <span class="belt-btn-continuous">
+                                <v-icon class="belt-btn-icon-inf">{{ mdiChevronLeft }}</v-icon>
                                 <span class="belt-btn-infinity">∞</span>
                             </span>
                         </v-btn>
@@ -67,14 +67,16 @@
                 <v-tooltip bottom>
                     <template #activator="{ on, attrs }">
                         <v-btn
-                            icon
-                            color="primary"
+                            small
+                            class="belt-btn belt-btn-inner"
+                            :class="{ 'belt-btn--active': isStepBackwardActive }"
                             :disabled="beltIsMoving"
                             :loading="loadings.includes(loadingBeltStepBackward)"
                             v-bind="attrs"
                             v-on="on"
                             @click="moveBeltStepBackward">
-                            <v-icon>{{ mdiChevronLeft }}</v-icon>
+                            <v-icon class="belt-btn-icon">{{ mdiChevronLeft }}</v-icon>
+                            <span class="belt-btn-label">-1</span>
                         </v-btn>
                     </template>
                     <span>{{ $t('Panels.PrintBeltPanel.MoveBackward') }}</span>
@@ -83,8 +85,14 @@
                 <!-- Center wheel / stop -->
                 <v-tooltip bottom>
                     <template #activator="{ on, attrs }">
-                        <v-btn icon :color="centerWheelColor" v-bind="attrs" v-on="on" @click="onCenterWheelClick">
-                            <v-icon large>{{ centerWheelIcon }}</v-icon>
+                        <v-btn
+                            icon
+                            :color="centerWheelColor"
+                            class="belt-btn-center"
+                            v-bind="attrs"
+                            v-on="on"
+                            @click="onCenterWheelClick">
+                            <v-icon>{{ centerWheelIcon }}</v-icon>
                         </v-btn>
                     </template>
                     <span>{{ beltIsMoving ? $t('Panels.PrintBeltPanel.Stop') : $t('Panels.PrintBeltPanel.BeltControls') }}</span>
@@ -94,14 +102,16 @@
                 <v-tooltip bottom>
                     <template #activator="{ on, attrs }">
                         <v-btn
-                            icon
-                            color="primary"
+                            small
+                            class="belt-btn belt-btn-inner"
+                            :class="{ 'belt-btn--active': isStepForwardActive }"
                             :disabled="beltIsMoving"
                             :loading="loadings.includes(loadingBeltStepForward)"
                             v-bind="attrs"
                             v-on="on"
                             @click="moveBeltStepForward">
-                            <v-icon>{{ mdiChevronRight }}</v-icon>
+                            <span class="belt-btn-label">+1</span>
+                            <v-icon class="belt-btn-icon">{{ mdiChevronRight }}</v-icon>
                         </v-btn>
                     </template>
                     <span>{{ $t('Panels.PrintBeltPanel.MoveForward') }}</span>
@@ -111,16 +121,16 @@
                 <v-tooltip bottom>
                     <template #activator="{ on, attrs }">
                         <v-btn
-                            icon
-                            color="primary"
-                            :disabled="beltMoving === 'forward'"
+                            small
+                            class="belt-btn belt-btn-edge-right"
+                            :class="{ 'belt-btn--active': isStartForwardActive }"
                             :loading="loadings.includes(loadingBeltStartForward)"
                             v-bind="attrs"
                             v-on="on"
                             @click="startBeltForward">
-                            <span class="belt-btn-continuous belt-btn-continuous--forward">
+                            <span class="belt-btn-continuous">
                                 <span class="belt-btn-infinity">∞</span>
-                                <v-icon small>{{ mdiArrowRight }}</v-icon>
+                                <v-icon class="belt-btn-icon-inf">{{ mdiChevronRight }}</v-icon>
                             </span>
                         </v-btn>
                     </template>
@@ -159,8 +169,6 @@ import {
     mdiStopCircleOutline,
     mdiChevronLeft,
     mdiChevronRight,
-    mdiArrowLeft,
-    mdiArrowRight,
 } from '@mdi/js'
 
 const BELT_DIRECTION_FORWARD = 1
@@ -191,8 +199,6 @@ export default class PrintBeltPanel extends Mixins(BaseMixin) {
     mdiStopCircleOutline = mdiStopCircleOutline
     mdiChevronLeft = mdiChevronLeft
     mdiChevronRight = mdiChevronRight
-    mdiArrowLeft = mdiArrowLeft
-    mdiArrowRight = mdiArrowRight
 
     beltMoving: BeltMovingState = 'off'
     throwObjectDialog = false
@@ -204,6 +210,22 @@ export default class PrintBeltPanel extends Mixins(BaseMixin) {
 
     get beltIsMoving(): boolean {
         return this.beltMoving !== 'off'
+    }
+
+    get isStepBackwardActive(): boolean {
+        return this.loadings.includes(this.loadingBeltStepBackward)
+    }
+
+    get isStepForwardActive(): boolean {
+        return this.loadings.includes(this.loadingBeltStepForward)
+    }
+
+    get isStartBackwardActive(): boolean {
+        return this.beltMoving === 'backward' || this.loadings.includes(this.loadingBeltStartBackward)
+    }
+
+    get isStartForwardActive(): boolean {
+        return this.beltMoving === 'forward' || this.loadings.includes(this.loadingBeltStartForward)
     }
 
     get centerWheelIcon(): string {
@@ -278,6 +300,10 @@ export default class PrintBeltPanel extends Mixins(BaseMixin) {
     }
 
     startBeltForward(): void {
+        if (this.beltMoving === 'forward') return
+
+        if (this.beltIsMoving) this.executeScript(BELT_STOP_SCRIPT)
+
         this.beltMoving = 'forward'
         const script = `${BELT_COMMAND_BASE} ACTION=START DIRECTION=${BELT_DIRECTION_FORWARD}`
 
@@ -285,6 +311,10 @@ export default class PrintBeltPanel extends Mixins(BaseMixin) {
     }
 
     startBeltBackward(): void {
+        if (this.beltMoving === 'backward') return
+
+        if (this.beltIsMoving) this.executeScript(BELT_STOP_SCRIPT)
+
         this.beltMoving = 'backward'
         const script = `${BELT_COMMAND_BASE} ACTION=START DIRECTION=${BELT_DIRECTION_BACKWARD}`
 
@@ -305,15 +335,85 @@ export default class PrintBeltPanel extends Mixins(BaseMixin) {
 </script>
 
 <style scoped>
+/* ── Belt control strip: single unified row with blue top/bottom borders ── */
+.belt-controls-row {
+    border-top: 2px solid var(--v-primary-base);
+    border-bottom: 2px solid var(--v-primary-base);
+    border-radius: 6px;
+    width: 100%;
+    justify-content: center;
+}
+
+/* ── Shared base for all directional buttons ── */
+.belt-btn {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: var(--v-primary-base) !important;
+    min-width: 0 !important;
+    padding: 0 14px !important;
+    border-radius: 0 !important;
+    height: 40px !important;
+}
+
+/* Center cog/stop sits inside the bordered row */
+.belt-btn-center {
+    margin: 0 4px;
+}
+
+/* Edge buttons touch the row's rounded corners */
+.belt-btn-edge-left {
+    border-radius: 4px 0 0 4px !important;
+}
+
+.belt-btn-edge-right {
+    border-radius: 0 4px 4px 0 !important;
+}
+
+.belt-btn-inner {
+    border-radius: 0 !important;
+}
+
+/* ── Active state: solid primary blue fill with white content ── */
+.belt-btn--active {
+    background-color: var(--v-primary-base) !important;
+    color: white !important;
+}
+
+.belt-btn--active .belt-btn-icon,
+.belt-btn--active .belt-btn-icon-inf,
+.belt-btn--active .belt-btn-infinity,
+.belt-btn--active .belt-btn-label {
+    color: white !important;
+}
+
+/* ── Icon sizing ── */
+.belt-btn-icon {
+    font-size: 22px !important;
+}
+
+.belt-btn-icon-inf {
+    font-size: 26px !important;
+}
+
+/* ── ±1 label ── */
+.belt-btn-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* ── Continuous (infinite) button inner layout ── */
 .belt-btn-continuous {
     display: flex;
     align-items: center;
     line-height: 1;
+    gap: 2px;
 }
 
 .belt-btn-infinity {
-    font-size: 0.85rem;
-    font-weight: bold;
+    font-size: 1.5rem;
+    font-weight: 700;
     line-height: 1;
 }
 </style>
