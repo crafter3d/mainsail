@@ -679,6 +679,15 @@
             "Weight": "Weight",
             "WeightSubtitle": "The weight of the filament in grams (without spool)."
         },
+        "CrafterShortcutsPanel": {
+            "BeltThrow": "Belt Throw",
+            "FilamentCut": "Filament Cut",
+            "Headline": "Crafter3D Shortcuts",
+            "Home": "Home",
+            "Light": "Light",
+            "LowerZAxis": "Lower Z Axis",
+            "PurgeAndClean": "Purge & Clean"
+        },
         "ExtruderControlPanel": {
             "Allowed": "Allowed",
             "CleanNozzle": "Clean Nozzle",

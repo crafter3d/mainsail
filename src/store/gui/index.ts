@@ -71,6 +71,7 @@ export const getDefaultState = (): GuiState => {
             mobileLayout: [
                 { name: 'webcam', visible: false },
                 { name: 'toolhead-control', visible: true },
+                { name: 'crafter-shortcuts', visible: true },
                 { name: 'extruder-control', visible: true },
                 { name: 'macros', visible: true },
                 { name: 'machine-settings', visible: true },
@@ -81,6 +82,7 @@ export const getDefaultState = (): GuiState => {
             tabletLayout1: [
                 { name: 'webcam', visible: true },
                 { name: 'toolhead-control', visible: true },
+                { name: 'crafter-shortcuts', visible: true },
                 { name: 'extruder-control', visible: true },
                 { name: 'macros', visible: true },
                 { name: 'machine-settings', visible: true },
@@ -93,6 +95,7 @@ export const getDefaultState = (): GuiState => {
             desktopLayout1: [
                 { name: 'webcam', visible: true },
                 { name: 'toolhead-control', visible: true },
+                { name: 'crafter-shortcuts', visible: true },
                 { name: 'extruder-control', visible: true },
                 { name: 'macros', visible: true },
                 { name: 'machine-settings', visible: true },
@@ -104,6 +107,7 @@ export const getDefaultState = (): GuiState => {
             ],
             widescreenLayout1: [
                 { name: 'toolhead-control', visible: true },
+                { name: 'crafter-shortcuts', visible: true },
                 { name: 'extruder-control', visible: true },
                 { name: 'macros', visible: true },
                 { name: 'miscellaneous', visible: true },

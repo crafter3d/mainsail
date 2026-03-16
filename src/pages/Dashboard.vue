@@ -83,6 +83,7 @@
 import Component from 'vue-class-component'
 import { Mixins } from 'vue-property-decorator'
 import AfcPanel from '@/components/panels/AfcPanel.vue'
+import CrafterShortcutsPanel from '@/components/panels/CrafterShortcutsPanel.vue'
 import ExtruderControlPanel from '@/components/panels/ExtruderControlPanel.vue'
 import DashboardMixin from '@/components/mixins/dashboard'
 import KlippyStatePanel from '@/components/panels/KlippyStatePanel.vue'
@@ -104,6 +105,7 @@ import WebcamPanel from '@/components/panels/WebcamPanel.vue'
 @Component({
     components: {
         AfcPanel,
+        CrafterShortcutsPanel,
         ExtruderControlPanel,
         KlippyStatePanel,
         LedEffectsPanel,
