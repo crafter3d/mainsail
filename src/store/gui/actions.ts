@@ -78,7 +78,8 @@ export const actions: ActionTree<GuiState, RootState> = {
             delete payload.value.dashboard.nonExpandPanels
         }
 
-        //update tools to temperatures panel from V2.1.x to V2.2.0
+        // update tools to temperatures panel from V2.1.x to V2.2.0
+        // and normalize Crafter panel migration to crafter3d.
         if ('dashboard' in payload.value) {
             const dashboard = payload.value.dashboard
             const layouts = [
@@ -93,17 +94,61 @@ export const actions: ActionTree<GuiState, RootState> = {
             ]
 
             layouts.forEach((layout) => {
-                if (layout in dashboard) {
-                    const index = dashboard[layout].findIndex((entry: GuiStateLayoutoption) => entry.name === 'tools')
+                if (!(layout in dashboard) || !Array.isArray(dashboard[layout])) return
 
-                    if (index !== -1) {
-                        dashboard[layout][index].name = 'temperature'
+                let layoutChanged = false
 
-                        dispatch('saveSetting', {
-                            name: 'dashboard.' + layout,
-                            value: dashboard[layout],
-                        })
+                const toolsIndex = dashboard[layout].findIndex(
+                    (entry: GuiStateLayoutoption | null) => entry?.name === 'tools'
+                )
+                if (toolsIndex !== -1) {
+                    dashboard[layout][toolsIndex].name = 'temperature'
+                    layoutChanged = true
+                }
+
+                const normalizedLayout = dashboard[layout].map((entry: GuiStateLayoutoption | null) => {
+                    if (!entry || !['crafter-shortcuts', 'print-belt'].includes(entry.name)) return entry
+
+                    layoutChanged = true
+                    return {
+                        ...entry,
+                        name: 'crafter3d',
                     }
+                })
+
+                const deduplicatedLayout: GuiStateLayoutoption[] = []
+                let crafter3dEntry: GuiStateLayoutoption | null = null
+
+                normalizedLayout.forEach((entry: GuiStateLayoutoption | null) => {
+                    if (!entry) return
+
+                    if (entry.name !== 'crafter3d') {
+                        deduplicatedLayout.push(entry)
+                        return
+                    }
+
+                    if (crafter3dEntry === null) {
+                        crafter3dEntry = {
+                            ...entry,
+                        }
+                        deduplicatedLayout.push(crafter3dEntry)
+                        return
+                    }
+
+                    const mergedVisibility = crafter3dEntry.visible || entry.visible
+                    if (crafter3dEntry.visible !== mergedVisibility) {
+                        crafter3dEntry.visible = mergedVisibility
+                    }
+
+                    layoutChanged = true
+                })
+
+                if (layoutChanged) {
+                    dashboard[layout] = deduplicatedLayout
+                    dispatch('saveSetting', {
+                        name: 'dashboard.' + layout,
+                        value: deduplicatedLayout,
+                    })
                 }
             })
         }

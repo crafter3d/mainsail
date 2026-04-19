@@ -679,6 +679,32 @@
             "Weight": "Weight",
             "WeightSubtitle": "The weight of the filament in grams (without spool)."
         },
+        "Crafter3dPanel": {
+            "BeltControls": "Belt controls",
+            "Calibrate": "Calibrate",
+            "CloseDoor": "Close",
+            "Headline": "Crafter3D Panel",
+            "Led": "LED",
+            "LoadFilament": "Load filament",
+            "LoadFilamentShort": "Load",
+            "LowerZAxis": "Lower Z Axis",
+            "MoveBackward": "Move -1",
+            "MoveBackwardTen": "Move -10",
+            "MoveForward": "Move +1",
+            "MoveForwardTen": "Move +10",
+            "OpenDoor": "Open",
+            "PurgeAndClean": "Purge & Clean",
+            "PurgeAndCleanShort": "Purge",
+            "StartBackward": "Start backward",
+            "StartForward": "Start forward",
+            "Stop": "Stop",
+            "Throw": "Throw",
+            "ThrowObjectConfirmText": "Are you sure you want to throw the object?",
+            "ThrowObjectConfirmTitle": "Throw object",
+            "UnloadFilament": "Unload filament",
+            "UnloadFilamentShort": "Unload",
+            "ZOffsetCalibrate": "Z Offset Calibrate"
+        },
         "CrafterShortcutsPanel": {
             "BeltThrow": "Belt Throw",
             "FilamentCut": "Filament Cut",
@@ -953,23 +979,6 @@
             "Off": "Off",
             "On": "On",
             "PowerControl": "Power Control"
-        },
-        "PrintBeltPanel": {
-            "BedCooldown": "Bed cooldown",
-            "BedMeshCalibrate": "Bed calibrate",
-            "BeltControls": "Belt controls",
-            "CloseDoor": "Close door",
-            "Headline": "Print Belt",
-            "MoveBackward": "Move -1",
-            "MoveForward": "Move +1",
-            "OpenDoor": "Open door",
-            "StartBackward": "Start backward",
-            "StartForward": "Start forward",
-            "Stop": "Stop",
-            "ThrowObject": "Throw object",
-            "ThrowObjectConfirmText": "Are you sure you want to throw the object?",
-            "ThrowObjectConfirmTitle": "Throw object",
-            "ZTiltAdjust": "Z tilt adjust"
         },
         "SpoolmanPanel": {
             "ActiveSpool": "Active Spool",
@@ -1659,3 +1668,4 @@
     },
     "title": "English"
 }
+

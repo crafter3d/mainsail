@@ -109,7 +109,6 @@ export const maxGcodeHistory = 50
  */
 export const allDashboardPanels = [
     'afc',
-    'crafter-shortcuts',
     'toolhead-control',
     'extruder-control',
     'macros',
@@ -119,7 +118,7 @@ export const allDashboardPanels = [
     'miscellaneous',
     'spoolman',
     'mmu',
-    'print-belt',
+    'crafter3d',
     'temperature',
     'webcam',
 ]

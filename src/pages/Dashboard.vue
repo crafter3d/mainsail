@@ -83,7 +83,6 @@
 import Component from 'vue-class-component'
 import { Mixins } from 'vue-property-decorator'
 import AfcPanel from '@/components/panels/AfcPanel.vue'
-import CrafterShortcutsPanel from '@/components/panels/CrafterShortcutsPanel.vue'
 import ExtruderControlPanel from '@/components/panels/ExtruderControlPanel.vue'
 import DashboardMixin from '@/components/mixins/dashboard'
 import KlippyStatePanel from '@/components/panels/KlippyStatePanel.vue'
@@ -96,7 +95,7 @@ import MinSettingsPanel from '@/components/panels/MinSettingsPanel.vue'
 import MiscellaneousPanel from '@/components/panels/MiscellaneousPanel.vue'
 import SpoolmanPanel from '@/components/panels/SpoolmanPanel.vue'
 import MmuPanel from '@/components/panels/MmuPanel.vue'
-import PrintBeltPanel from '@/components/panels/PrintBeltPanel.vue'
+import Crafter3dPanel from '@/components/panels/Crafter3dPanel.vue'
 import StatusPanel from '@/components/panels/StatusPanel.vue'
 import ToolheadControlPanel from '@/components/panels/ToolheadControlPanel.vue'
 import TemperaturePanel from '@/components/panels/TemperaturePanel.vue'
@@ -105,7 +104,6 @@ import WebcamPanel from '@/components/panels/WebcamPanel.vue'
 @Component({
     components: {
         AfcPanel,
-        CrafterShortcutsPanel,
         ExtruderControlPanel,
         KlippyStatePanel,
         LedEffectsPanel,
@@ -117,7 +115,7 @@ import WebcamPanel from '@/components/panels/WebcamPanel.vue'
         MiscellaneousPanel,
         SpoolmanPanel,
         MmuPanel,
-        PrintBeltPanel,
+        Crafter3dPanel,
         StatusPanel,
         ToolheadControlPanel,
         TemperaturePanel,

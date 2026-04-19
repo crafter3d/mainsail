@@ -3,7 +3,6 @@ import BaseMixin from '@/components/mixins/base'
 import { capitalize } from '@/plugins/helpers'
 import { GuiMacrosStateMacrogroup } from '@/store/gui/macros/types'
 import {
-    mdiApps,
     mdiArrowCollapseVertical,
     mdiCodeTags,
     mdiConsoleLine,
@@ -61,8 +60,6 @@ export default class DashboardMixin extends BaseMixin {
                 return mdiArrowCollapseVertical
             case 'toolhead-control':
                 return mdiGamepad
-            case 'crafter-shortcuts':
-                return mdiApps
             case 'macros':
                 return mdiCodeTags
             case 'miscellaneous':
@@ -81,7 +78,7 @@ export default class DashboardMixin extends BaseMixin {
                 return mdiAdjust
             case 'mmu':
                 return mdiMulticast
-            case 'print-belt':
+            case 'crafter3d':
                 return mdiWrenchCog
             case 'afc':
                 return afcIconLogo
